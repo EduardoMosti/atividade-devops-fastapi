@@ -1,4 +1,4 @@
-\# Atividade DevOps FastAPI
+# Atividade DevOps FastAPI
 
 
 
@@ -6,7 +6,7 @@ Projeto desenvolvido para atividade prática de DevOps utilizando uma API constr
 
 
 
-\## Objetivo
+## Objetivo
 
 
 
@@ -14,41 +14,41 @@ O objetivo do projeto é demonstrar o ciclo básico de uma aplicação Python co
 
 
 
-\- criação de uma API REST;
+- criação de uma API REST;
 
-\- execução local da aplicação;
+- execução local da aplicação;
 
-\- validação de endpoints;
+- validação de endpoints;
 
-\- testes automatizados;
+- testes automatizados;
 
-\- criação de imagem Docker;
+- criação de imagem Docker;
 
-\- execução de pipeline no GitHub Actions.
-
-
-
-\## Tecnologias utilizadas
+- execução de pipeline no GitHub Actions.
 
 
 
-\- Python 3.12
-
-\- FastAPI
-
-\- Uvicorn
-
-\- Pytest
-
-\- Flake8
-
-\- Docker
-
-\- GitHub Actions
+## Tecnologias utilizadas
 
 
 
-\## Estrutura do projeto
+- Python 3.12
+
+- FastAPI
+
+- Uvicorn
+
+- Pytest
+
+- Flake8
+
+- Docker
+
+- GitHub Actions
+
+
+
+## Estrutura do projeto
 
 
 
@@ -84,11 +84,11 @@ atividade-devops-fastapi/
 
 
 
-\## Endpoints da API
+## Endpoints da API
 
 
 
-\### Rota principal
+### Rota principal
 
 
 
@@ -118,7 +118,7 @@ Retorno esperado:
 
 
 
-\### Health check
+### Health check
 
 
 
@@ -146,7 +146,7 @@ Retorno esperado:
 
 
 
-\### Criar item
+### Criar item
 
 
 
@@ -176,7 +176,7 @@ Exemplo de corpo da requisição:
 
 
 
-\## Como executar localmente
+## Como executar localmente
 
 
 
@@ -252,7 +252,7 @@ http://127.0.0.1:8080/docs
 
 
 
-\## Como executar os testes
+## Como executar os testes
 
 
 
@@ -264,7 +264,7 @@ python -m pytest tests/ -v
 
 
 
-\## Como validar a sintaxe
+## Como validar a sintaxe
 
 
 
@@ -276,7 +276,7 @@ flake8 app tests --count --select=E9,F63,F7,F82 --show-source --statistics
 
 
 
-\## Como executar com Docker
+## Como executar com Docker
 
 
 
@@ -316,7 +316,7 @@ http://127.0.0.1:8080
 
 
 
-\## Pipeline DevOps
+## Pipeline DevOps
 
 
 
@@ -328,17 +328,17 @@ O pipeline executa as seguintes etapas:
 
 
 
-1\. Baixa o código do repositório.
+1. Baixa o código do repositório.
 
-2\. Configura o Python 3.12.
+2. Configura o Python 3.12.
 
-3\. Instala as dependências do projeto.
+3. Instala as dependências do projeto.
 
-4\. Executa validação de sintaxe com Flake8.
+4. Executa validação de sintaxe com Flake8.
 
-5\. Executa os testes automatizados com Pytest.
+5. Executa os testes automatizados com Pytest.
 
-6\. Valida a construção da imagem Docker.
+6. Valida a construção da imagem Docker.
 
 
 
@@ -354,7 +354,7 @@ O arquivo do pipeline está localizado em:
 
 
 
-\## Status da aplicação
+## Status da aplicação
 
 
 
