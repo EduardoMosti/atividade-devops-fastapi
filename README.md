@@ -1,3 +1,8 @@
 # Atividade_15-04
 
-Pipeline funcionando 2
+- objetivo da atividade
+- tecnologias utilizadas
+- como rodar localmente
+- como executar os testes
+- como executar com Docker
+- como funciona o pipeline DevOps
