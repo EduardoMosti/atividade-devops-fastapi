@@ -10,9 +10,16 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/eduardomosti/atividade-devops-fastapi
+
 jobs:
-  build-test:
-    name: Validar aplicacao Python
+  build:
+    name: Build e testes da aplicacao
     runs-on: ubuntu-latest
 
     steps:
@@ -30,23 +37,105 @@ jobs:
           pip install flake8 pytest
           pip install -r requirements.txt
 
-      - name: Validar sintaxe com flake8
+      - name: Validar sintaxe com Flake8
         run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 app tests --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Executar testes automatizados
         run: |
           PYTHONPATH=. pytest tests/ -v --tb=short
 
-  docker-build:
-    name: Validar build da imagem Docker
+  imagem:
+    name: Construir e publicar imagem Docker
     runs-on: ubuntu-latest
-    needs: build-test
+    needs: build
 
     steps:
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
 
-      - name: Construir imagem Docker local
-        run: |
-          docker build -t atividade-devops-fastapi .
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir e publicar imagem Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy_homologacao:
+    name: Deploy Homologacao
+    runs-on: ubuntu-latest
+    needs: imagem
+
+    if: github.ref == 'refs/heads/develop'
+
+    environment:
+      name: homologacao
+
+    steps:
+      - name: Deploy automatico em homologacao
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HML_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Iniciando deploy em homologacao"
+
+            sudo docker pull ${{ env.IMAGE_NAME }}:latest
+
+            sudo docker stop atividade-devops-fastapi-hml 2>/dev/null || true
+            sudo docker rm atividade-devops-fastapi-hml 2>/dev/null || true
+
+            sudo docker run --name atividade-devops-fastapi-hml -d -p 8080:8080 ${{ env.IMAGE_NAME }}:latest
+
+            sleep 5
+
+            curl -f http://localhost:8080/health || exit 1
+
+            echo "Deploy de homologacao concluido com sucesso"
+
+  deploy_producao:
+    name: Deploy Producao
+    runs-on: ubuntu-latest
+    needs: imagem
+
+    if: github.ref == 'refs/heads/main'
+
+    environment:
+      name: producao
+
+    steps:
+      - name: Deploy controlado em producao
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Iniciando deploy em producao"
+
+            sudo docker pull ${{ env.IMAGE_NAME }}:latest
+
+            sudo docker stop atividade-devops-fastapi-prd 2>/dev/null || true
+            sudo docker rm atividade-devops-fastapi-prd 2>/dev/null || true
+
+            sudo docker run --name atividade-devops-fastapi-prd -d -p 80:8080 ${{ env.IMAGE_NAME }}:latest
+
+            sleep 5
+
+            curl -f http://localhost/health || exit 1
+
+            echo "Deploy de producao concluido com sucesso"
